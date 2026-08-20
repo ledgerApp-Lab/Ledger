@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -62,10 +63,19 @@
   <div class="disclaimer">Prices are sourced live from CoinGecko and reflect actual market data. Ledger does not trade on your behalf, hold custody of funds, or promise any rate of return. Not financial advice.</div>
 </div>
 
+<script src="supabase-client.js"></script>
 <script src="app.js"></script>
 <script>
-  const session = requireSession();
-  if(session){ initDashboard(session); }
+  (async function boot(){
+    const session = await getCurrentSession();
+    if(!session){ window.location.href = 'login.html'; return; }
+    const profile = await getProfile(session.user.id);
+    initDashboard({
+      userId: session.user.id,
+      label: (profile && profile.full_name) || session.user.email,
+      plan: (profile && profile.plan) || 'basic'
+    });
+  })();
 </script>
 </body>
 </html>
