@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log in — Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="glow glow-1"></div>
+<div class="glow glow-2"></div>
+
+<div class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html"><div class="mark">L</div><div class="name">Ledger<span>.</span></div></a>
+    <div class="nav-actions">
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">☀️</button>
+    </div>
+  </div>
+</div>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <a class="back-link" href="index.html">&larr; Back to home</a>
+    <div class="auth-tabs">
+      <div class="auth-tab active">Log in</div>
+      <a class="auth-tab" style="display:block" href="signup.html">Sign up</a>
+    </div>
+    <form id="login-form" onsubmit="return handleLogin(event)">
+      <div class="field"><label for="login-email">Email</label><input type="email" id="login-email" placeholder="name@example.com" required></div>
+      <div class="field"><label for="login-password">Password</label><input type="password" id="login-password" placeholder="Your password" required></div>
+      <div class="error-text" id="login-error">Enter a valid email and password.</div>
+      <button type="submit" class="btn btn-primary btn-block">Log in<span class="spark"></span><span class="spark"></span><span class="spark"></span><span class="spark"></span></button>
+    </form>
+    <div class="auth-note">This demo runs entirely in your browser — no data leaves your device, and billing isn't wired up yet. Closing the tab ends your session.</div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+function handleLogin(e){
+  e.preventDefault();
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-password').value;
+  const err = document.getElementById('login-error');
+  if(!email.includes('@') || pass.length < 1){ err.classList.add('show'); return false; }
+  err.classList.remove('show');
+  startSession(email, 'basic');
+  window.location.href = 'dashboard.html';
+  return false;
+}
+</script>
+</body>
+</html>

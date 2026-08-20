@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ledger — track every holding, live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="glow glow-1"></div>
+<div class="glow glow-2"></div>
+
+<div class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html"><div class="mark">L</div><div class="name">Ledger<span>.</span></div></a>
+    <div class="nav-links">
+      <a href="index.html#features">Features</a>
+      <a href="index.html#pricing">Pricing</a>
+      <a href="index.html#faq">FAQ</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">☀️</button>
+      <a class="btn btn-ghost" href="login.html">Log in</a>
+      <a class="btn btn-primary" href="signup.html">Start free<span class="spark"></span><span class="spark"></span><span class="spark"></span><span class="spark"></span></a>
+    </div>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="reveal in">
+    <div class="eyebrow">✦ Live market data, no simulation</div>
+    <h1>See what you hold,<br><span class="accent">in real numbers.</span></h1>
+    <p>Ledger tracks the actual market value of your crypto holdings, live, across almost every asset that trades. No paper gains, no promised returns — just your holdings, priced honestly.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="signup.html">Start free<span class="spark"></span><span class="spark"></span><span class="spark"></span><span class="spark"></span></a>
+      <a class="btn btn-ghost" href="index.html#pricing">See plans</a>
+    </div>
+    <div class="hero-note">No card required for the free plan. Prices sourced live from CoinGecko.</div>
+  </div>
+  <div class="hero-visual reveal in">
+    <div class="hv-title">Live snapshot</div>
+    <div class="hv-row"><div class="hv-asset"><span class="hv-dot"></span>Bitcoin</div><div style="display:flex;gap:10px;align-items:center;"><span class="mono" id="preview-btc-price">$—</span><span class="hv-chg up" id="preview-btc">···</span></div></div>
+    <div class="hv-row"><div class="hv-asset"><span class="hv-dot"></span>Ethereum</div><div style="display:flex;gap:10px;align-items:center;"><span class="mono" id="preview-eth-price">$—</span><span class="hv-chg up" id="preview-eth">···</span></div></div>
+    <div class="hv-row"><div class="hv-asset"><span class="hv-dot"></span>Solana</div><div style="display:flex;gap:10px;align-items:center;"><span class="mono" id="preview-sol-price">$—</span><span class="hv-chg up" id="preview-sol">···</span></div></div>
+    <div class="hv-row"><div class="hv-asset"><span class="hv-dot"></span>Tether</div><div style="display:flex;gap:10px;align-items:center;"><span class="mono" id="preview-usdt-price">$—</span><span class="hv-chg up" id="preview-usdt">···</span></div></div>
+  </div>
+</div>
+
+<div class="section" id="features">
+  <div class="section-head reveal"><div class="eyebrow">Why Ledger</div><h2>Built to be honest about the numbers</h2><p>Every figure on the dashboard traces back to a live market price. Nothing is simulated.</p></div>
+  <div class="features">
+    <div class="feature reveal"><div class="icon">✦</div><h3>Live pricing</h3><p>Prices update from real market data every 30 seconds, across thousands of listed assets.</p></div>
+    <div class="feature reveal"><div class="icon">✦</div><h3>Plain-language ledger</h3><p>Your holdings, laid out like a real ledger — amount, price, 24h change, value. No jargon.</p></div>
+    <div class="feature reveal"><div class="icon">✦</div><h3>Session history</h3><p>Watch your actual portfolio value move as the market moves, charted through your session.</p></div>
+  </div>
+</div>
+
+<div class="section" id="pricing">
+  <div class="section-head reveal"><div class="eyebrow">Plans</div><h2>Simple, honest pricing</h2><p>Same live data on every plan. Paid tiers raise how much you can track at once and add reporting tools.</p></div>
+  <div class="pricing">
+    <div class="plan reveal">
+      <div class="plan-name">Basic</div>
+      <div class="plan-price">$0<span>/mo</span></div>
+      <div class="plan-desc">For keeping an eye on a few core holdings.</div>
+      <ul class="plan-features"><li>Track up to 3 assets</li><li>Live pricing, 30s refresh</li><li>Session value chart</li><li>Access to almost all listed assets</li></ul>
+      <a class="btn btn-ghost btn-block" href="signup.html?plan=basic">Start free</a>
+    </div>
+    <div class="plan reveal">
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">$9<span>/mo</span></div>
+      <div class="plan-desc">For actively tracking a real, diversified portfolio.</div>
+      <ul class="plan-features"><li>Track up to 15 assets</li><li>Live pricing, 30s refresh</li><li>Session value chart</li><li>Best/worst performer breakdown</li><li>CSV export</li></ul>
+      <a class="btn btn-ghost btn-block" href="signup.html?plan=pro">Start Pro</a>
+    </div>
+    <div class="plan reveal">
+      <div class="plan-name">Premium</div>
+      <div class="plan-price">$24<span>/mo</span></div>
+      <div class="plan-desc">For traders and advisors tracking full books.</div>
+      <ul class="plan-features"><li>Unlimited assets</li><li>Live pricing, 30s refresh</li><li>Session value chart + allocation view</li><li>CSV export</li><li>Priority data refresh</li></ul>
+      <a class="btn btn-ghost btn-block" href="signup.html?plan=premium">Start Premium</a>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="faq">
+  <div class="section-head reveal"><div class="eyebrow">FAQ</div><h2>Questions</h2></div>
+  <div class="faq">
+    <div class="faq-item reveal"><h4>Does Ledger hold or trade my funds?</h4><p>No. Ledger only displays market data for assets you tell it you hold. It never takes custody, never trades on your behalf, and never processes deposits or withdrawals.</p></div>
+    <div class="faq-item reveal"><h4>Where do the prices come from?</h4><p>Live public market data, refreshed roughly every 30 seconds. Values move because real markets move — nothing here is simulated or guaranteed.</p></div>
+    <div class="faq-item reveal"><h4>Which countries can use this?</h4><p>Ledger is a data display tool, not a financial or custodial service, so it's built to be usable anywhere with no region restriction on sign-up.</p></div>
+    <div class="faq-item reveal"><h4>Can I cancel anytime?</h4><p>Yes — plans are month to month with no lock-in.</p></div>
+  </div>
+</div>
+
+<div class="footer">Ledger is a market-data display tool. Not financial advice. Not a broker, exchange, or custodian.</div>
+
+<script src="app.js"></script>
+<script>loadPreview();</script>
+</body>
+</html>
