@@ -22,26 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 });
 
-/* ---------------- session (very simple in-memory demo auth) ----------------
-   NOTE: This is a frontend-only demo. There is no real account database yet —
-   see the Supabase integration notes in chat for making this persistent. */
-function requireSession(){
-  const label = sessionStorage.getItem('ledger-user');
-  if(!label){ window.location.href = 'login.html'; return null; }
-  return {
-    label,
-    plan: sessionStorage.getItem('ledger-plan') || 'basic'
-  };
-}
-function startSession(label, plan){
-  sessionStorage.setItem('ledger-user', label);
-  sessionStorage.setItem('ledger-plan', plan);
-}
-function endSession(){
-  sessionStorage.removeItem('ledger-user');
-  sessionStorage.removeItem('ledger-plan');
-}
-
 /* ---------------- landing page live preview ticker ---------------- */
 async function loadPreview(){
   try{
@@ -64,14 +44,16 @@ async function loadPreview(){
 const PLAN_LIMITS = { basic: 3, pro: 15, premium: Infinity };
 const PLAN_LABELS = { basic: 'Basic', pro: 'Pro', premium: 'Premium' };
 let currentPlan = 'basic';
+let currentUserId = null;
 let holdings = [];
 let prices = {};
 let sessionHistory = [];
 let chart = null;
 let coinList = [];
 
-function initDashboard(session){
+async function initDashboard(session){
   currentPlan = session.plan;
+  currentUserId = session.userId;
   document.getElementById('who-label').textContent = session.label;
   document.getElementById('plan-pill').textContent = PLAN_LABELS[currentPlan];
   const limit = PLAN_LIMITS[currentPlan];
@@ -80,13 +62,15 @@ function initDashboard(session){
     : `${PLAN_LABELS[currentPlan]} plan — up to ${limit} holdings. <a href="index.html#pricing">Upgrade</a>`;
   document.getElementById('csv-lock').style.display = currentPlan === 'basic' ? 'block' : 'none';
   document.getElementById('csv-panel').style.display = currentPlan === 'basic' ? 'none' : 'block';
+
+  holdings = await fetchHoldingsFromDb(currentUserId);
   renderHoldings(); renderMetrics();
   loadCoinList();
   fetchPrices();
   setInterval(fetchPrices, 30000);
 }
 
-function logout(){ endSession(); window.location.href = 'index.html'; }
+async function logout(){ await signOutUser(); window.location.href = 'index.html'; }
 
 async function loadCoinList(){
   try{
@@ -120,7 +104,7 @@ async function fetchPrices(){
   }catch(err){ const note = document.getElementById('chart-note'); if(note) note.textContent = 'Live price feed unavailable right now — retrying shortly.'; }
 }
 
-function addHolding(){
+async function addHolding(){
   const searchInput = document.getElementById('add-search');
   const amtInput = document.getElementById('add-amount');
   const limitHit = document.getElementById('limit-hit');
@@ -133,15 +117,27 @@ function addHolding(){
   const amt = parseFloat(amtInput.value);
   if(!amt || amt <= 0){ amtInput.style.borderColor = 'var(--loss)'; return; }
   amtInput.style.borderColor = '';
+
   const existing = holdings.find(h => h.id === match.id);
-  if(existing){ existing.amount += amt; } else{ holdings.push({id: match.id, sym: match.symbol.toUpperCase(), name: match.name, amount: amt}); }
+  if(existing){
+    const newAmount = existing.amount + amt;
+    existing.amount = newAmount;
+    if(existing.dbId) await updateHoldingAmountInDb(existing.dbId, newAmount);
+  } else {
+    const holding = {id: match.id, sym: match.symbol.toUpperCase(), name: match.name, amount: amt};
+    const dbId = await saveHoldingToDb(currentUserId, holding);
+    holding.dbId = dbId;
+    holdings.push(holding);
+  }
   searchInput.value = ''; amtInput.value = '';
   fetchPrices();
 }
-function removeHolding(id){
+async function removeHolding(id){
+  const target = holdings.find(h => h.id === id);
   holdings = holdings.filter(h => h.id !== id);
   document.getElementById('limit-hit').classList.remove('show');
   renderHoldings(); renderMetrics();
+  if(target && target.dbId) await deleteHoldingFromDb(target.dbId);
 }
 function renderHoldings(){
   const body = document.getElementById('holdings-body');
