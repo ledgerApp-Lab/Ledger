@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -53,10 +54,11 @@
       <div class="error-text" id="signup-error">Passwords don't match.</div>
       <button type="submit" class="btn btn-primary btn-block">Create account<span class="spark"></span><span class="spark"></span><span class="spark"></span><span class="spark"></span></button>
     </form>
-    <div class="auth-note">This demo runs entirely in your browser — no data leaves your device, and billing isn't wired up yet. Closing the tab ends your session.</div>
+    <div class="auth-note">Billing isn't wired up yet, so any plan selected here is applied without payment for now. You'll get a confirmation email — check your inbox after signing up.</div>
   </div>
 </div>
 
+<script src="supabase-client.js"></script>
 <script src="app.js"></script>
 <script>
 (function preselectPlan(){
@@ -64,17 +66,49 @@
   const plan = params.get('plan');
   if(plan){ document.getElementById('su-plan').value = plan; }
 })();
-function handleSignup(e){
+
+async function handleSignup(e){
   e.preventDefault();
   const p1 = document.getElementById('su-pass').value;
   const p2 = document.getElementById('su-pass2').value;
   const err = document.getElementById('signup-error');
-  if(p1 !== p2 || p1.length < 8){ err.classList.add('show'); return false; }
+  if(p1 !== p2 || p1.length < 8){
+    err.textContent = "Passwords don't match, or are under 8 characters.";
+    err.classList.add('show'); return false;
+  }
   err.classList.remove('show');
-  const label = document.getElementById('su-name').value.trim() || document.getElementById('su-email').value.trim();
-  const plan = document.getElementById('su-plan').value;
-  startSession(label, plan);
-  window.location.href = 'dashboard.html';
+
+  const btn = e.target.querySelector('button[type="submit"]');
+  btn.disabled = true; btn.textContent = 'Creating account…';
+
+  const { error } = await signUpUser({
+    name: document.getElementById('su-name').value.trim(),
+    country: document.getElementById('su-region').value,
+    phone: document.getElementById('su-phone').value.trim(),
+    email: document.getElementById('su-email').value.trim(),
+    password: p1,
+    plan: document.getElementById('su-plan').value
+  });
+
+  btn.disabled = false; btn.innerHTML = 'Create account<span class="spark"></span><span class="spark"></span><span class="spark"></span><span class="spark"></span>';
+
+  if(error){
+    err.textContent = error.message;
+    err.classList.add('show');
+    return false;
+  }
+
+  // If email confirmation is required, there's no session yet — send them to check inbox.
+  const session = await getCurrentSession();
+  if(session){
+    window.location.href = 'dashboard.html';
+  } else {
+    document.querySelector('.auth-card').innerHTML = `
+      <a class="back-link" href="index.html">&larr; Back to home</a>
+      <h3 class="font-display" style="margin-top:0;">Check your email</h3>
+      <p style="color:var(--text-soft);font-size:14px;line-height:1.6;">We've sent a confirmation link to your email. Click it to activate your account, then come back and log in.</p>
+      <a class="btn btn-primary btn-block" href="login.html" style="margin-top:16px;">Go to login</a>`;
+  }
   return false;
 }
 </script>
