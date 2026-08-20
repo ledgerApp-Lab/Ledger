@@ -97,7 +97,23 @@
 
 <div class="footer">Ledger is a market-data display tool. Not financial advice. Not a broker, exchange, or custodian.</div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
 <script src="app.js"></script>
-<script>loadPreview();</script>
+<script>
+loadPreview();
+
+// If we've just arrived here from an email confirmation link, Supabase leaves
+// an access_token in the URL hash. Detect it, let the client pick up the
+// session, then send the user straight to their dashboard.
+(async function handleAuthRedirect(){
+  if(window.location.hash.includes('access_token')){
+    const { data } = await supabaseClient.auth.getSession();
+    if(data.session){
+      window.location.href = 'dashboard.html';
+    }
+  }
+})();
+</script>
 </body>
 </html>
